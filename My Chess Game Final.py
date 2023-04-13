@@ -13,12 +13,15 @@ pygame.init()
 width, height = 640, 640
 screen = pygame.display.set_mode((width, height))
 
+
 board_size=8
 square_size=80
 
 #pieces
 loc='C:\\Users\\user\\Music\\chess\\'
 d={"wk":loc+"white_king.png","wq":loc+"white_queen.png","wkn1":loc+"white_knight.png", "wkn2":loc+"white_knight.png","wb1":loc+"white_bishop.png","wb2":loc+"white_bishop.png", "wr1":loc+"white_rook.png","wr2":loc+"white_rook.png","wp1":loc+"white_pawn.png", "wp2":loc+"white_pawn.png","wp3":loc+"white_pawn.png","wp4":loc+"white_pawn.png", "wp5":loc+"white_pawn.png","wp6":loc+"white_pawn.png","wp7":loc+"white_pawn.png", "wp8":loc+"white_pawn.png","bk":loc+"black_king.png","bq":loc+"black_queen.png", "bkn1":loc+"black_knight.png","bkn2":loc+"black_knight.png","bb1":loc+"black_bishop.png","bb2":loc+"black_bishop.png","br1":loc+"black_rook.png","br2":loc+"black_rook.png","bp1":loc+"black_pawn.png","bp2":loc+"black_pawn.png","bp3":loc+"black_pawn.png","bp4":loc+"black_pawn.png","bp5":loc+"black_pawn.png","bp6":loc+"black_pawn.png","bp7":loc+"black_pawn.png","bp8":loc+"black_pawn.png"}
+
+
 
 # Take image as input
 wr1=pygame.image.load(d["wr1"])
@@ -789,83 +792,85 @@ def checkmate_check(loc1,loc2,touched_piece,attacker,checked_king):
             checked_piece=key
             checked_piece_loc=piece_locs[checked_piece]
             attackers.append(checked_piece_loc)
-        if(len(attackers)==1):
-            col1=king_loc[0]
-            row1=int(king_loc[1])
-            col2=checked_piece_loc[0]
-            row2=int(checked_piece_loc[1])
-            i1=list3.index(col1)
-            i2=list3.index(col2)
-            # if attack is vertical
-            if(col1==col2):
-                if(row1>row2):
-                    for row in range(row2,row1):
-                        loc1=col1+str(row)
-                        between_locs.append(loc1)
-                else:
-                    for row in range(row2,row1):
-                        loc1=col1+str(row)
-                        between_locs.append(loc1)
-            # if attack is horizontal
-            elif(row1==row2):
-                if(i1<i2):
-                    rang=list3[i1+1:i2+1]
-                    for col in rang:
-                        loc1=col+str(row1)
-                        between_locs.append(loc1)
-                else:
-                    rang=list3[i2:i1]
-                    for col in rang:
-                        loc1=col+str(row1)
-                        between_locs.append(loc1)
-                    
-            #if attack is diagonal
-            elif(abs(i1-i2)==abs(row1-row2)):
-                if(i1<i2):
-                    rang=list3[i1+1:i2+1] # c8:f5
-                else:
-                    rang=list3[i2:i1][::-1]
-                if(row1<row2):
-                    rang2=range(row1+1,row2+1)
-                else:
-                    rang2=range(row1-1,row2-1,-1)
-                for k1,k2 in zip(rang,rang2):
-                    loc1=k1+str(k2)
+    if(len(attackers)==1):
+        col1=king_loc[0]
+        row1=int(king_loc[1])
+        col2=checked_piece_loc[0]
+        row2=int(checked_piece_loc[1])
+        i1=list3.index(col1)
+        i2=list3.index(col2)
+        # if attack is vertical
+        if(col1==col2):
+            if(row1>row2):
+                for row in range(row2,row1):
+                    loc1=col1+str(row)
                     between_locs.append(loc1)
-            # attacker is a scary knight
             else:
-                between_locs.append(piece_locs[attacker])
-                    
-            for loc11 in between_locs:
-                killers[loc11]=[]
-            for key2,val2 in regions_under_attack[find_piece_color(find_piece_name(king_loc))].items():
-                for loc11 in between_locs:
-                    if(loc11 in val2 and key2!=checked_king):
-                        if(key2 in piece_type["pawn"]):
-                            if(piece_locs[attacker] in val2):
-                                killers[loc11].append(key2)
-                        else:
-                            killers[loc11].append(key2)
-            king_refuge_locs=king_refuge(checked_king)
+                for row in range(row2,row1,-1):
+                    loc1=col1+str(row)
+                    between_locs.append(loc1)
+        # if attack is horizontal
+        elif(row1==row2):
+            if(i1<i2):
+                rang=list3[i1+1:i2+1]
+                for col in rang:
+                    loc1=col+str(row1)
+                    between_locs.append(loc1)
+            else:
+                rang=list3[i2:i1]
+                for col in rang:
+                    loc1=col+str(row1)
+                    between_locs.append(loc1)
 
-            if(find_piece_type(touched_piece)=="pawn"):
-                if(find_piece_color(touched_piece)==find_piece_color(checked_king)):
-                    pawn_loc=piece_locs[touched_piece]
-                    if(loc2 in between_locs and loc2[0]==pawn_loc[0]):
-                        if(int(loc2[1])-int(pawn_loc[1])==2 and int(pawn_loc[1])==2 and find_piece_color(touched_piece)=="whites"):
-                            killers[loc2].append(touched_piece)
-                        elif(int(pawn_loc[1])-int(loc2[1])==2 and int(pawn_loc[1])==7 and find_piece_color(touched_piece)=="blacks"):
-                            killers[loc2].append(touched_piece)
-                        elif(int(loc2[1])-int(pawn_loc[1])==1 and find_piece_color(touched_piece)=="whites"):
-                            killers[loc2].append(touched_piece)
-                        elif(int(pawn_loc[1])-int(loc2[1])==1 and find_piece_color(touched_piece)=="blacks"):
-                            killers[loc2].append(touched_piece)
-            #print(king_refuge_locs)
-            for loc11 in king_refuge_locs:
-                if(loc11 in killers):
-                    killers[loc11].append(checked_king)
-                else:
-                    killers[loc11]=[checked_king]
+        #if attack is diagonal
+        elif(abs(i1-i2)==abs(row1-row2)):
+            if(i1<i2):
+                rang=list3[i1+1:i2+1] # c8:f5
+            else:
+                rang=list3[i2:i1][::-1]
+            if(row1<row2):
+                rang2=range(row1+1,row2+1)
+            else:
+                rang2=range(row1-1,row2-1,-1)
+            for k1,k2 in zip(rang,rang2):
+                loc1=k1+str(k2)
+                between_locs.append(loc1)
+        # attacker is a scary knight
+        else:
+            between_locs.append(piece_locs[attacker])
+
+        for loc11 in between_locs:
+            killers[loc11]=[]
+        for key2,val2 in regions_under_attack[find_piece_color(find_piece_name(king_loc))].items():
+            for loc11 in between_locs:
+                if(loc11 in val2 and key2!=checked_king):
+                    if(key2 in piece_type["pawn"]):
+                        if(piece_locs[attacker] in val2):
+                            killers[loc11].append(key2)
+                    else:
+                        killers[loc11].append(key2)
+        king_refuge_locs=king_refuge(checked_king)
+
+        if(find_piece_type(touched_piece)=="pawn"):
+            if(find_piece_color(touched_piece)==find_piece_color(checked_king)):
+                pawn_loc=piece_locs[touched_piece]
+                if(loc2 in between_locs and loc2[0]==pawn_loc[0]):
+                    if(int(loc2[1])-int(pawn_loc[1])==2 and int(pawn_loc[1])==2 and find_piece_color(touched_piece)=="whites"):
+                        killers[loc2].append(touched_piece)
+                    elif(int(pawn_loc[1])-int(loc2[1])==2 and int(pawn_loc[1])==7 and find_piece_color(touched_piece)=="blacks"):
+                        killers[loc2].append(touched_piece)
+                    elif(int(loc2[1])-int(pawn_loc[1])==1 and find_piece_color(touched_piece)=="whites"):
+                        killers[loc2].append(touched_piece)
+                    elif(int(pawn_loc[1])-int(loc2[1])==1 and find_piece_color(touched_piece)=="blacks"):
+                        killers[loc2].append(touched_piece)
+        #print(king_refuge_locs)
+        for loc11 in king_refuge_locs:
+            if(loc11 in killers):
+                killers[loc11].append(checked_king)
+            else:
+                killers[loc11]=[checked_king]
+    print(killers)
+    print(between_locs)
     final_attackers=[]
     for val in killers.values():
         final_attackers=final_attackers+val
@@ -898,7 +903,7 @@ def pawn_promotion(pawn,color):
         pro_piece_rect.center=(300,y_loc)
         screen.blit(pro_piece, pro_piece_rect)
     return prom_list
-
+print
 def draw():
     draw_img=pygame.image.load('C:\\Users\\user\\Music\\chess\\draw.png')
     draw_img=pygame.transform.scale(draw_img,(254,168))
@@ -907,8 +912,6 @@ def draw():
     screen.blit(draw_img, draw_rect)
 
 def game_over(piece):
-#    text=self.font.render("GameOver",True,black)
-#    text_rect=text.get_rect(centre=(300,300))
     if(find_piece_color(piece)=="blacks"):
         winner=pygame.image.load('C:\\Users\\user\\Music\\chess\\white_wins.png')
     else:
